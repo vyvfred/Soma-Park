@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>SOMA PARC · V1.5 · Copilote stratégique</title>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="css/variables.css"><link rel="stylesheet" href="css/components.css"><link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="particles"></div>
+<header>
+  <div class="somaLogo"><div class="somaName">SOMA<span>PARC</span></div><div class="somaTag">VYV Ambulance</div></div>
+  <div class="headerSep"></div>
+  <div class="headerCenter"><h1>Assistant renouvellement parc 2027 · V1.5 Copilote stratégique</h1><div class="topMeta" id="topMeta">Import Power BI · Qualité donnée · Simulation renouvellement · Préparation budget SOMA</div></div>
+  <div class="actions"><button class="secondary" id="btnAnomalyCenter">Anomalies</button><button class="secondary" id="btnGoExecutive">Exécutif</button><button class="secondary" id="btnGoOptimizer">Stratégies</button><button class="secondary" id="btnGoComex">COMEX</button><button class="secondary" id="btnGoScenarioCompare">Scénarios</button><button class="secondary" id="btnGoSimulation">Simulation</button><button class="secondary" id="btnDiagnostic">Diagnostic</button><button class="secondary" id="btnDemo">Charger démo</button><button class="secondary" id="btnExportExcel">Export Excel</button><button class="primary" id="btnExportCsv">Export CSV</button></div>
+</header>
+<main>
+  <section class="card executiveHero" id="executive">
+    <div class="cardHead">
+      <div><h2>Recommandation Exécutive</h2><p class="hint">Vue direction : état du parc, budget conseillé, risques majeurs, agences prioritaires et décision proposée.</p></div>
+      <div class="execActions"><button class="primary" id="btnExportPdf">Export PDF COMEX</button><button class="secondary" id="btnExportPpt">Export présentation HTML</button></div>
+    </div>
+    <div class="directionGrid">
+      <article class="healthCard" id="healthIndexBox"></article>
+      <article class="execPanel"><h3>Décision recommandée</h3><div id="executiveDecision" class="decisionText"></div></article>
+      <article class="execPanel"><h3>Risques principaux</h3><div id="executiveRisks" class="riskList"></div></article>
+      <article class="execPanel"><h3>Agences prioritaires</h3><div id="executiveAgencies" class="miniList"></div></article>
+    </div>
+    <div class="execKpis" id="executiveKpis"></div>
+    <div class="grid c2 execCharts">
+      <article class="card softCard"><h3>Evolution patrimoniale 2027-2031</h3><div class="barChart" id="execFiveYearChart"></div></article>
+      <article class="card softCard"><h3>Scénarios & criticité restante</h3><div class="barChart" id="execScenarioChart"></div></article>
+    </div>
+  </section>
+
+  <section class="card" id="scenarioCompare">
+    <div class="cardHead"><div><h2>Comparaison multi-scénarios</h2><p class="hint">Comparaison synthétique des arbitrages : budget, véhicules remplacés, Health Index et risque restant.</p></div><span id="bestScenarioPill" class="versionPill">Meilleur scénario</span></div>
+    <div class="tablewrap smallTable"><table id="scenarioCompareTable"></table></div>
+  </section>
+
+  <section class="card" id="agencyPriority">
+    <div class="cardHead"><div><h2>Priorisation des agences</h2><p class="hint">Classement automatique selon l'âge moyen, les véhicules critiques, la conformité réglementaire et la concentration du risque.</p></div></div>
+    <div class="grid c3">
+      <article class="softCard card"><h3>Top 10 agences prioritaires</h3><div id="priorityAgencies" class="miniList"></div></article>
+      <article class="softCard card"><h3>Top 10 agences saines</h3><div id="healthyAgencies" class="miniList"></div></article>
+      <article class="softCard card"><h3>Carte risque réseau</h3><div id="agencyHeatMap" class="heatMap"></div></article>
+    </div>
+  </section>
+
+  <section class="card" id="patrimony">
+    <div class="cardHead"><div><h2>Analyse patrimoniale</h2><p class="hint">Projection à 5 ans et 10 ans du vieillissement du parc, des renouvellements et des amortissements.</p></div></div>
+    <div class="grid c2 execCharts">
+      <article class="card softCard"><h3>Plan pluriannuel de renouvellement</h3><div class="tablewrap smallTable"><table id="fiveYearPlanTable"></table></div></article>
+      <article class="card softCard"><h3>Projection à 10 ans</h3><div class="barChart" id="tenYearProjectionChart"></div></article>
+    </div>
+  </section>
+
+  <section class="card comexReport" id="comex">
+    <div class="cardHead"><div><h2>Présentation COMEX</h2><p class="hint">Dossier généré automatiquement, prêt à copier ou exporter en PDF.</p></div><button class="secondary" id="btnCopyComex">Copier le dossier</button></div>
+    <div id="comexReportContent" class="consultingReport"></div>
+  </section>
+
+
+  <section class="card" id="optimizer">
+    <div class="cardHead"><div><h2>Copilote stratégique d’investissement</h2><p class="hint">Compare les stratégies Patrimoine, Sécurité, Exploitation, Financier et Équilibre territorial selon les contraintes budgétaires et opérationnelles.</p></div><div><button class="primary" id="btnRunOptimizer">Optimiser</button><button class="secondary" id="btnExportComexV15">Export COMEX</button><button class="secondary" id="btnExportPptV15">Export présentation HTML</button></div></div>
+    <div class="grid c3 compactForm optConstraints">
+      <div><label>Budget maximum</label><input id="optBudget" type="number" value="2000000"></div>
+      <div><label>Nb max véhicules</label><input id="optMaxVehicles" type="number" value="999"></div>
+      <div><label>Plafond par agence</label><input id="optAgencyCap" type="number" value="0" placeholder="0 = aucun"></div>
+      <div><label>Plafond par région</label><input id="optRegionCap" type="number" value="0" placeholder="0 = aucun"></div>
+      <div><label>Plafond par type</label><input id="optTypeCap" type="number" value="0" placeholder="0 = aucun"></div>
+      <div><label>Min. ambulances</label><input id="optMinAmb" type="number" value="0"></div>
+      <div><label>Min. VSL</label><input id="optMinVsl" type="number" value="0"></div>
+      <div><label>Âge moyen cible</label><input id="optAgeTarget" type="number" value="5.5" step="0.1"></div>
+      <div><label>Health Index cible</label><input id="optHealthTarget" type="number" value="75"></div>
+    </div>
+    <div class="strategyCards" id="strategyCompareV15"></div>
+    <div class="tablewrap smallTable"><table id="strategyTableV15"></table></div>
+  </section>
+
+  <section class="card" id="strategyConsequences">
+    <div class="cardHead"><div><h2>Analyse des conséquences</h2><p class="hint">Ce que la stratégie retenue améliore, dégrade, accepte, supprime et reporte.</p></div></div>
+    <div class="consequenceGrid" id="strategyConseqV15"></div>
+  </section>
+
+  <section class="card" id="plan5ansV15">
+    <div class="cardHead"><div><h2>Plan d’investissement 2027-2031</h2><p class="hint">Simulation pluriannuelle automatique pour lisser les investissements et éviter les pics budgétaires.</p></div></div>
+    <div class="grid c2"><div class="tablewrap smallTable"><table id="fiveYearPlanV15"></table></div><article class="card softCard"><h3>CAPEX annuel k€</h3><div class="barChart" id="fiveYearCapexChartV15"></div></article></div>
+  </section>
+
+  <section class="card" id="patrimonialV15">
+    <div class="cardHead"><div><h2>Indicateurs patrimoniaux</h2><p class="hint">Vision valeur, rythme de renouvellement, vieillissement et investissement cumulé.</p></div></div>
+    <div class="kpis" id="patrimonialKpis"></div>
+  </section>
+
+  <section class="card" id="explainV15">
+    <div class="cardHead"><div><h2>Explications par destinataire</h2><p class="hint">Résumé automatique adapté à chaque décideur.</p></div></div>
+    <div class="grid c2" id="audienceSummaries"></div>
+  </section>
+
+  <section class="card comexReport" id="comexPremiumV15Section">
+    <div class="cardHead"><div><h2>Dossier COMEX premium V1.5</h2><p class="hint">Rapport complet : diagnostic, arbitrage, impacts, risques et décisions proposées.</p></div></div>
+    <div id="comexPremiumV15" class="consultingReport"></div>
+  </section>
+
+  <section class="card" id="scoreAdminSection">
+    <div class="cardHead"><div><h2>Administration du scoring</h2><p class="hint">Paramétrage local des règles sans modification du code.</p></div><div><button class="primary" id="btnSaveScoreAdmin">Enregistrer</button><button class="secondary" id="btnResetScoreAdmin">Réinitialiser</button></div></div>
+    <div id="scoreAdminV15"></div>
+  </section>
+
+  <section class="heroGrid">
+    <article class="card uploadCard"><div class="cardHead"><div><h2>1. Import Power BI professionnel</h2><p class="hint">Glissez un export Excel/CSV. SOMA PARC détecte la meilleure feuille, mappe les colonnes par synonymes, valide les données et calcule tous les indicateurs.</p></div><span class="versionPill">V1.5.1</span></div><div class="dropZone" id="dropZone"><input id="fileInput" type="file" accept=".xlsx,.xls,.csv"><div class="dropIcon">↧</div><strong>Importer un export Power BI</strong><span>Cliquer ou glisser-déposer ici</span><small>Traitement 100 % navigateur. Aucune donnée envoyée.</small></div></article>
+    <article class="card"><h2>Qualité & scoring</h2><p class="hint">Score chargé depuis <b>config/score.json</b>. Les seuils sont prêts pour l'intégration future.</p><div class="grid c3 compactForm"><div><label>Coût ambulance</label><input id="costAmb" type="number" value="95000"></div><div><label>Coût VSL / taxi</label><input id="costLight" type="number" value="45000"></div><div><label>Seuil CT proche</label><input id="ctDays" type="number" value="60"></div></div><div id="dataQuality" class="qualityBox"></div><div class="scoreLegend" id="scoreLegend"></div></article>
+  </section>
+  <section class="card" id="importReportCard"><div class="cardHead"><h2>Rapport d'import</h2><button class="secondary tiny" id="btnToggleAnomalies">Afficher anomalies</button></div><div id="importReport" class="emptyState">Charge un fichier pour obtenir le rapport d'import.</div><div id="anomalyPanel" class="anomalyPanel hidden"></div></section>
+  <section class="card"><div class="kpis" id="kpis"></div></section>
+  <section class="grid c3 dashboardGrid"><article class="card"><h3>Top 10 agences âgées</h3><div class="barChart" id="barsOldAgency"></div></article><article class="card"><h3>Histogramme des âges</h3><div class="barChart" id="barsAge"></div></article><article class="card"><h3>Répartition CT</h3><div class="donutBox" id="ctDistribution"></div></article><article class="card"><h3>Top 10 véhicules critiques</h3><div id="topCritical" class="miniList"></div></article><article class="card"><h3>Répartition taximètres</h3><div class="donutBox" id="taxiDistribution"></div></article><article class="card"><h3>Répartition par type</h3><div class="donutBox" id="typeDistribution"></div></article></section>
+  <section class="card simulationSection" id="simulation"><div class="cardHead"><div><h2>2. Simulation renouvellement</h2><p class="hint">Assistant d’arbitrage budgétaire 2027 : compare les scénarios, retient un scénario et prépare l’export futur vers SOMA.</p></div><span id="selectedScenarioBadge" class="versionPill hidden">Scénario retenu</span></div>
+    <div class="simLayout">
+      <aside class="simParams">
+        <h3>Paramètres budgétaires</h3>
+        <label>Budget libre</label><input type="range" min="0" max="5000000" step="50000" value="1000000" id="budgetRange"><div class="rangeLabel" id="budgetLabel">1 000 000 €</div>
+        <div class="grid c2 compactForm"><div><label>Plafond/agence</label><input id="agencyCap" type="number" value="0" placeholder="0 = aucun"></div><div><label>Amortissement</label><input id="amortYears" type="number" value="5"></div></div>
+        <div id="typeBudgetInputs" class="typeBudgetInputs"></div>
+        <div class="simActions"><button class="primary" id="btnRunSimulation">Calculer</button><button class="secondary" id="btnClearScenario">Effacer retenu</button></div>
+      </aside>
+      <main class="simMain">
+        <div class="scenarioCards" id="scenarioCards"></div>
+        <div class="card softCard"><h3>Impact budgétaire prévisionnel</h3><div class="kpis scenarioKpis" id="budgetImpact"></div></div>
+        <div class="grid c2 simCharts"><article class="card softCard"><h3>Répartition par type</h3><div class="barChart" id="simTypeChart"></div></article><article class="card softCard"><h3>Répartition par agence</h3><div class="barChart" id="simAgencyChart"></div></article></div>
+        <div class="card softCard"><div class="cardHead"><h3>Rapport automatique de synthèse</h3><button class="secondary tiny" id="btnCopySummary">Copier</button></div><div id="aiSummary" class="summaryBox">Importe un fichier pour générer la recommandation.</div></div>
+        <div class="card softCard"><div class="cardHead"><h3>Véhicules retenus</h3><div><button class="secondary tiny" id="btnExportScenarioCsv">Export CSV détaillé</button><button class="secondary tiny" id="btnExportScenarioJson">Export JSON SOMA</button></div></div><div class="tablewrap smallTable"><table id="scenarioVehicleTable"></table></div></div>
+      </main>
+    </div>
+  </section>
+  <section class="card"><div class="cardHead"><h2>3. Liste priorisée des véhicules</h2><span id="tableCount" class="topMeta"></span></div><div class="toolbar"><div><label>Agence</label><select id="filterAgency"><option value="">Toutes</option></select></div><div><label>Type</label><select id="filterType"><option value="">Tous</option></select></div><div><label>Marque</label><select id="filterBrand"><option value="">Toutes</option></select></div><div><label>Criticité</label><select id="filterDecision"><option value="">Toutes</option><option>Remplacer</option><option>Planifier</option><option>Surveiller</option><option>Conserver</option></select></div><div><label>Âge min.</label><input id="filterAge" type="number" placeholder="ex : 7"></div><div><label>Réglementaire</label><select id="filterReg"><option value="">Tous</option><option value="ctExpired">CT dépassé</option><option value="ctSoon">CT &lt; 60 j</option><option value="taxiExpired">Taximètre dépassé</option><option value="taxiSoon">Taximètre &lt; 60 j</option></select></div><div><label>Recherche</label><input id="search" placeholder="immat, modèle, agence..."></div><div><label>Lignes/page</label><select id="pageSize"><option>25</option><option selected>50</option><option>100</option><option>200</option></select></div><button class="secondary tiny" id="btnColumns">Colonnes</button></div><div class="columnsPanel hidden" id="columnsPanel"></div><div class="tablewrap"><table id="vehicleTable"></table></div><div class="pager" id="pager"></div></section>
+</main>
+<div class="modal hidden" id="detailModal"><div class="modalCard"><button class="closeBtn" id="closeModal">×</button><div id="detailContent"></div></div></div>
+<div class="modal hidden" id="anomalyModal"><div class="modalCard wide"><button class="closeBtn" id="closeAnomalyModal">×</button><div id="anomalyCenter"></div></div></div>
+<div class="modal hidden" id="diagnosticModal"><div class="modalCard"><button class="closeBtn" id="closeDiagnosticModal">×</button><div id="diagnosticContent"></div></div></div>
+<script src="js/utils.js"></script><script src="js/storage.js"></script><script src="js/score.js"></script><script src="js/parser.js"></script><script src="js/validator.js"></script><script src="js/importExcel.js"></script><script src="js/filters.js"></script><script src="js/charts.js"></script><script src="js/simulator.js"></script><script src="js/executive.js"></script><script src="js/dashboard.js"></script><script src="js/table.js"></script><script src="js/app.js"></script><script src="js/optimizer.js"></script><script src="js/hardening.js"></script>
+</body></html>
