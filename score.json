@@ -1,0 +1,8 @@
+{
+  "age": { "lt5": 0, "from5to7": 10, "from7to9": 20, "gt9": 30 },
+  "ct": { "soonDays": 60, "soon": 15, "expired": 30, "missing": 8 },
+  "taximeter": { "soonDays": 60, "soon": 10, "expired": 15 },
+  "events": { "accident": 15, "damage": 10, "fine": 5 },
+  "strategicType": { "ambulance": 10, "assu": 10, "vsl": 6, "taxi": 4, "tpmr": 4 },
+  "thresholds": { "watch": 30, "plan": 50, "replace": 70 }
+}

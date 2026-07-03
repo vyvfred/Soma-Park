@@ -1,0 +1,1 @@
+window.SomaStorage={key:'soma_parc_v1_2',load(){try{return JSON.parse(localStorage.getItem(this.key)||'{}')}catch{return{}}},save(v){try{localStorage.setItem(this.key,JSON.stringify(v||{}))}catch(e){console.warn('Storage indisponible',e)}}};
